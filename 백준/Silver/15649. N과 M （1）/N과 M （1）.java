@@ -4,12 +4,6 @@ import java.util.*;
 
 public class Main {
 
-	/**
-	* 작성자 : 박준엽
-	* 문제 : [S3] N과 M(1) - 15649
-	* 제출 : 2024년 1월 30일
-	* 아이디어 : 순열 메소드(뽑은 횟수)를 활용해서 배열에 뽑은 수를 저장한다. 다 뽑았으면 출력한다.
-	*/
 	static int[] arr;
 	static int n, m;
 	static boolean[] visited;
