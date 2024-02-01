@@ -1,29 +1,36 @@
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
+
+	static int n;
+	static StringBuilder sb;
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		// n자리
-		int n = Integer.parseInt(br.readLine());
+		n = Integer.parseInt(br.readLine());
 		
-		String tmp = "1";
-		for(int i = 0; i < n-1; i++) {
-			tmp += 0;
+
+		sb = new StringBuilder();
+		dfs(0, 0);
+		
+		
+		System.out.println(sb.toString());
+	}
+	
+	public static void dfs(int depth, int num) {
+		if(depth == n) {
+			sb.append(num/10 + "\n");
 		}
 		
-		int num = Integer.parseInt(tmp);
-		int finalNum = Integer.parseInt(tmp+0);
-		
-		StringBuilder sb = new StringBuilder();
-		
-		for(int i = num; i < finalNum; i++) {
-			if(checkNum(i, num)) {
-				sb.append(i +"\n");
+		for(int i = 1; i <= 9; i++) {
+			if(isPrime(num+i)) {
+				dfs(depth+1, (num+i)*10);
 			}
 		}
-		System.out.println(sb.toString());
+		
+		
 	}
 	
 	public static boolean isPrime(int n) {
@@ -38,17 +45,5 @@ public class Main {
 		}
 		return true;
 	}
-	
-	public static boolean checkNum(int num, int bigyoNum) {
-		while(bigyoNum > 0) {
-			
-			if(!isPrime(num / bigyoNum)) {
-				return false;
-			}
-			bigyoNum /= 10;
-		}
-		return true;
-	}
-	
-
 }
+
