@@ -34,32 +34,24 @@ public class Main {
 			};
 		});
 		
-		
 		recursion(0);
-		
-		for(int[] array : arrayList) {
-			for(int i : array) {
-				bw.write(i + " ");
-			}
-			bw.newLine();
-		}
 		bw.flush();
 	}
 	
 	static void recursion(int depth) throws Exception {
 		if(depth == m) {
-			int[] tmp = Arrays.copyOf(result, depth);
-			for(int[] array : arrayList) {
-				if(Arrays.equals(array, tmp)) {
-					return;
-				}
+			
+			for(int i : result) {
+				bw.write(i + " ");
 			}
-			arrayList.add(tmp);
+			bw.newLine();
 			return;
 		}
 		
+		int beforeNum = 0;
 		for(int i = 0; i < n; i++) {
-			if(!visited[i]) {
+			if(beforeNum != arr[i] && !visited[i]) {
+				beforeNum = arr[i];
 				visited[i] = true;
 				result[depth] = arr[i];
 				recursion(depth + 1);
