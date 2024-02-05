@@ -1,62 +1,63 @@
 import java.util.*;
 import java.io.*;
 
+
+class Tower {
+	int height;
+	int index;
+	
+	public Tower(int height, int index) {
+		this.height = height;
+		this.index = index;
+	}
+}
+
 public class Main {
 	
 	static int n;
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		n = Integer.parseInt(br.readLine());
-		Map<Integer, Integer> topMap = new HashMap<Integer, Integer>();
-		Stack<Integer> stack = new Stack<>();
-		int[] result = new int[n];
-		int[] arr = new int[n];
+		Stack<Tower> stack = new Stack<>();
+		StringBuilder sb = new StringBuilder();
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		
 		for(int i = 0; i < n; i++) {
-			arr[i] = Integer.parseInt(st.nextToken());
-		}
-		
-		// 오른쪽부터 입력을 받는다.
-		for(int i = n-1; i >=0; i--) {
-			int curNum = arr[i];
-				// 스택이 비어있으면 넣고 멈추기
-				if(stack.isEmpty()) {
-					topMap.put(curNum, i);
-					stack.add(curNum);
-				} else {
-					while(true) {
-						if(stack.isEmpty()) {
-							// 스택이 비어있으면 현재 값을 넣고 break;
-							topMap.put(curNum, i);
-							stack.add(curNum);
-							break;
-						}
-						
-						int stackTop = stack.peek();
-						// 현재 번호가 스택의 탑보다 크면
-						if(curNum > stackTop) {
-							// 스택 탑의 위치를 가져와서 정답배열[스택탑 위치] = i로 높은 탑의 위치를 가리키도록 한다.
-							result[topMap.get(stackTop)] = i+1;
-							stack.pop();
-							
-						} else {
-							// 현재 번호가 스택 탑보다 작으면
-							topMap.put(curNum, i);
-							stack.add(curNum);
-							break;
-						}
-					
-					} // end of while
-				}
+			int height = Integer.parseInt(st.nextToken());
 			
-		}
-		
-		for(int i = 0; i < n; i++) {
-			System.out.print(result[i] + " ");
-		}
-
-		
+			if(stack.isEmpty()) {
+				sb.append("0 ");
+				stack.push(new Tower(height, i+1));
+			} else {
+				while(true) {
+					// 스택이 비어있으면 정답을 추가하고 새로운 타워를 스택에 넣자.
+					if(stack.isEmpty()) {
+						sb.append("0 ");
+						stack.push(new Tower(height, i+1));
+						break;
+					}
+					
+					// 스택이 비어있지 않다면
+					else {
+						Tower tower = stack.peek();
+						
+						// 스택에서 꺼낸 탑의 높이가 현재 비교할 탑 높이보다 크다면
+						if(tower.height > height) {
+							// 현재 비교할 탑은 스택에 있는 탑에 레이저를 쏠 것이기 때문에
+							// 현재 위치의 정답은 스택에 있는 탑의 위치이다.
+							sb.append(tower.index + " ");
+							stack.push(new Tower(height, i+1));
+							break;
+						} else {
+							// 스택에서 꺼낸 탑의 높이가 현재 비교할 탑 높이보다 작다면
+							// 스택에 있는 탑은 이제 쓸모가 없다 지워주자.
+							stack.pop();
+						}
+					}			
+				}
+			}
+		} // end of for
+		System.out.println(sb.toString());
 	}
 	    
 }
