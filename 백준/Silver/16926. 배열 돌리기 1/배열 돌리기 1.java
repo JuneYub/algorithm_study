@@ -1,4 +1,3 @@
-
 import java.util.*;
 import java.io.*;
 
@@ -57,17 +56,26 @@ public class Main {
 			width--;
 		}
 		
-		
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		for(int y = 0; y < n; y++) {
 			for(int x = 0; x < m; x++) {
-				System.out.print(result[y][x] + " ");
+				bw.write(result[y][x] + " ");
 			}
-			System.out.println();
+			bw.newLine();
 		}
-		
+		bw.flush();
 		
 	}
 	
+	/**
+	 * 
+	 * @param y
+	 * @param x
+	 * @param minX 제일 좌측 x
+	 * @param maxX 제일 우측 x
+	 * @param minY 제일 상단 y
+	 * @param maxY 제일 하단 y
+	 */
 	private static void rotation(int y, int x, int minX, int maxX, int minY, int maxY) {
 		int cnt = 0; 
 		int tmp = map[y][x];
