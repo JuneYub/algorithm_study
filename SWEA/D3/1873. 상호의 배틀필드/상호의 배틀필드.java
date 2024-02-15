@@ -48,6 +48,7 @@ public class Solution {
 	static int direction; // 12시 - 0, 3시 - 1, 6시 - 2, 9시 - 3
 	static int[] dx = {0 , 1, 0, -1};
 	static int[] dy = {-1 , 0, 1, 0};
+	static char[] tankD = {'^', '>', 'v', '<'};
 	public static void main(String args[]) throws Exception {
 	    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	    int t = Integer.parseInt(br.readLine());
@@ -81,55 +82,19 @@ public class Solution {
 		    for(int i = 0; i < n; i++) {
 		    	if(oper[i] == 'U') {
 		    		direction = 0;
-		    		int newX = tankX + dx[direction];
-		    		int newY = tankY + dy[direction];
-		    		if(moveAbl(newX, newY)) {
-		    			map[tankY][tankX] = '.';
-		    			tankX = newX;
-		    			tankY = newY;
-		    			map[tankY][tankX] = '^';
-		    		} else {
-		    			map[tankY][tankX] = '^';
-		    		}
+		    		updateTankPostion(direction);
 		    	}
 		    	if(oper[i] == 'R') {
 		    		direction = 1;
-		    		int newX = tankX + dx[direction];
-		    		int newY = tankY + dy[direction];
-		    		if(moveAbl(newX, newY)) {
-		    			map[tankY][tankX] = '.';
-		    			tankX = newX;
-		    			tankY = newY;
-		    			map[tankY][tankX] = '>';
-		    		} else {
-		    			map[tankY][tankX] = '>';
-		    		}
+		    		updateTankPostion(direction);
 		    	}
 		    	if(oper[i] == 'D') {
 		    		direction = 2;
-		    		int newX = tankX + dx[direction];
-		    		int newY = tankY + dy[direction];
-		    		if(moveAbl(newX, newY)) {
-		    			map[tankY][tankX] = '.';
-		    			tankX = newX;
-		    			tankY = newY;
-		    			map[tankY][tankX] = 'v';
-		    		} else {
-		    			map[tankY][tankX] = 'v';
-		    		}
+		    		updateTankPostion(direction);
 		    	}
 		    	if(oper[i] == 'L') {
 		    		direction = 3;
-		    		int newX = tankX + dx[direction];
-		    		int newY = tankY + dy[direction];
-		    		if(moveAbl(newX, newY)) {
-		    			map[tankY][tankX] = '.';
-		    			tankX = newX;
-		    			tankY = newY;
-		    			map[tankY][tankX] = '<';
-		    		} else {
-		    			map[tankY][tankX] = '<';
-		    		}
+		    		updateTankPostion(direction);
 		    	}
 		    	
 		    	if(oper[i] =='S') {
@@ -148,6 +113,19 @@ public class Solution {
 	    } // end of for
 	    
 	}
+	public static void updateTankPostion(int directionInput) {
+		int newX = tankX + dx[directionInput];
+		int newY = tankY + dy[directionInput];
+		if(moveAbl(newX, newY)) {
+			map[tankY][tankX] = '.';
+			tankX = newX;
+			tankY = newY;
+			map[tankY][tankX] = tankD[directionInput];
+		} else {
+			map[tankY][tankX] = tankD[directionInput];
+		}
+	}
+	
 	public static boolean moveAbl(int x, int y) {
 		if( isRange(y, x) && map[y][x] == '.') {
 			return true;
@@ -193,4 +171,3 @@ public class Solution {
 		return true;
 	}
 }
-
