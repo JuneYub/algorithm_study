@@ -76,7 +76,11 @@ public class Solution {
 	} // end of public static void main(String args[]) throws Exception
 	
 	public static void dfs(int depth, int result, Client prev) {
+		if(result > minDistance) {
+			return;
+		}
 		
+        
 		if(depth == n) {
 			int distance = Math.abs(homeX - prev.x) + Math.abs(homeY - prev.y);
 			result += distance;
