@@ -33,22 +33,21 @@ public class Main
 	}
 	
 	public static int binarySearch(int left, int right, int target) {
-	    int mid;
-	    while(left < right) {
-	        mid = (left + right) / 2;
-	        
-	        // 가운데 값이 타겟보다 작다면
-	        // 가운데보다 1 큰 값이 왼쪽이 된다.
-	        if(dp[mid] < target) {
-	            left = mid + 1;
-	        }
-	        // 가운데 값이 타겟보다 크다면
-	        // 가운데가 오른쪽이 된다.
-	        else {
-	            right = mid;
-	        }
-	    }
-	    return right;
+		int mid = (left + right) / 2;
+		while(left <= right) {
+			mid = (left + right) / 2;
+			
+			if(dp[mid] == target) {
+				return mid;
+			}
+			else if(dp[mid] < target) {
+				left = mid+1;
+			}
+			else if(dp[mid] > target) {
+				right = mid - 1;
+			}
+		}
+		return left;
 	}
 }
 
