@@ -5,14 +5,19 @@ import java.io.*;
 public class Main {
 	
 	static List<Integer>[] list;
-	static int[] parent, depth;
+	static int[] depth;
+	static int[][] parent;
+	static int LOG;
 	public static void main(String[] args) throws Exception {
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
 		int n = Integer.parseInt(br.readLine());
 		
-		parent = new int[n+1];
+		// 밑이 2인 로그로 변환한 후 올림하여 정수로 변환시켜 가장 큰 깊이에서의 로그 값을 구함
+		LOG = (int) Math.ceil(Math.log(n) / Math.log(2));
+		
+		parent = new int[n+1][LOG];
 		depth = new int[n+1];
 		list = new ArrayList[n+1];
 		for(int i = 1; i < n+1; i++) {
@@ -29,7 +34,18 @@ public class Main {
 			list[b].add(a);
 		}
 		
-		init(1, 1, 0);
+		init(1, 1);
+		
+		// j 는 1부터 최대 깊이 로그 직전까지의 부모노드를 세팅해준다. (j==0 은 바로 위에 부모 노드임)
+		for(int j = 1; j < LOG; j++) {
+			for(int i = 1; i <= n; i++) {
+				if(parent[i][j-1] != 0) {
+					// parent[1][1] = parent[ parent[1][0] ][0] 1번 노드의 2^1 부모는 1번 노드의 바로 윗 부모의 바로 윗 부모이다.
+					parent[i][j] = parent[parent[i][j-1]][j-1];
+				}
+			}
+		}
+		
 		
 		StringBuilder sb = new StringBuilder();
 		int m = Integer.parseInt(br.readLine());
@@ -45,18 +61,17 @@ public class Main {
 	}
 	
 	// 높이 배열과 부모 배열을 초기화 하는 함수
-	static void init(int current, int height, int parentNum) {
+	static void init(int current, int d) {
 		// 현재 노드의 깊이를 지정한다. 루트노드는 1이다.
-		depth[current] = height;
-		// 현재 노드의 부모 노드를 지정한다. 루트 노드는 0 이다.
-		parent[current] = parentNum;
+		depth[current] = d;
 		
 		// 현재 노드 아래에 연결된 노드를 돌면서 다시 세팅한다.
 		for(int next : list[current]) {
-			// 연결된 노드가 부모노드와 같지 않다면
-			if(next != parentNum) {
-				// 연결된 노드, 깊이 1 더해주고, 부모노드는 지금 노드로 세팅해서 초기화
-				init(next, height+1, current);
+			// 연결된 노드의 깊이가 세팅되어 있지 않다면
+			if(depth[next] == 0) {
+				// 연결된 노드의 i==0 부모로 현재 노드를 세팅해준다.
+				parent[next][0] = current;
+				init(next, d+1);
 			}
 		}
 		
@@ -67,22 +82,27 @@ public class Main {
 		int ah = depth[a];
 		int bh = depth[b];
 		
-		// a 와 b의 높이 맞추기
-		while(ah > bh) {
-			a = parent[a];
-			ah--;
-		}
-		while(ah < bh) {
-			b = parent[b];
-			bh--;
+		if(ah < bh) {
+			int tmp = a;
+			a = b;
+			b = tmp;
 		}
 		
-		// 높이가 같아지면 한칸씩 위로 올림
-		while(a!=b) {
-			a = parent[a];
-			b = parent[b];
+		for(int i = LOG-1; i>=0; i--) {
+			if(Math.pow(2,  i) <= depth[a] - depth[b] ) {
+				a = parent[a][i];
+			}
 		}
-		return a;
+		
+		if(a==b) return a;
+		
+		for(int i=LOG-1; i >= 0; i--) {
+			if(parent[a][i] != parent[b][i]) {
+				a = parent[a][i];
+				b = parent[b][i];
+			}
+		}
+		return parent[a][0];
 		
 	}
 	
