@@ -53,7 +53,7 @@ public class Main {
 		boolean[][][] visited = new boolean[n][m][2];
 		int cnt = Integer.MAX_VALUE;
 		
-		PriorityQueue<Position> pq = new PriorityQueue<>();
+		Queue<Position> pq = new ArrayDeque<>();
 		visited[0][0][0] = true;
 		pq.add(new Position(0,0,1,0));
 		
