@@ -38,8 +38,8 @@ public class Main
 				
 				// 조건 미충족시 right를 뒤로 땡긴다.
 			} else {
-				right = mid;
-				if(right == left) break;
+				right = mid-1;
+				//if(right == left) break;
 			}
 		}
 		return left-1;
