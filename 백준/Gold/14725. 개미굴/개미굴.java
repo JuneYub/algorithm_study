@@ -34,7 +34,7 @@ public class Main {
 			}
 		}
 		
-		dfs(graph, new String(""));
+		dfs(graph, "");
 		System.out.println(sb.toString());
 
 	}
@@ -45,7 +45,7 @@ public class Main {
 		
 		for(String key : keySet) {
 			sb.append(bar).append(key).append("\n");
-			dfs(treeMap.get(key), new String(bar+"--"));
+			dfs(treeMap.get(key), bar+"--");
 		}
 		
 	}
