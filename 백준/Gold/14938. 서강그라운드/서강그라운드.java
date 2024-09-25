@@ -2,84 +2,95 @@ import java.util.*;
 import java.lang.*;
 import java.io.*;
 
-class Node implements Comparable<Node> {
-    int end, weight;
+class Position implements Comparable<Position> {
+    int end;
+    int value;
 
-    public Node(int end, int weight) {
+    public Position(int end, int value) {
         this.end = end;
-        this.weight = weight;
+        this.value = value;
     }
 
-    @Override
-    public int compareTo(Node o) {
-        return this.weight - o.weight;
+    public int compareTo(Position p) {
+        return this.value - p.value;
     }
 }
 
 class Main {
-    public static int n, m, r;
-    public static int[] items;
-    public static List<List<Node>> graph = new ArrayList<>();
-    
+    static int n, m, r;
+    static int[] items;
+    static List<List<Position>> graph = new ArrayList<>();
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
         r = Integer.parseInt(st.nextToken());
 
         items = new int[n+1];
-        st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= n; i++) {
-            items[i] = Integer.parseInt(st.nextToken());
-        }
-        
-        for (int i = 0; i <= n; i++) {
+        for(int i = 0; i <= n; i++) {
             graph.add(new ArrayList<>());
         }
         
-        for (int i = 0; i < r; i++) {
+        st = new StringTokenizer(br.readLine());
+        for(int i = 1; i <= n; i++) {
+            items[i] = Integer.parseInt(st.nextToken());
+        }
+
+        for(int i = 0; i < r; i++) {
             st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            int l = Integer.parseInt(st.nextToken());
-            graph.get(a).add(new Node(b, l));
-            graph.get(b).add(new Node(a, l));
-        }
-        
-        int maxItems = 0;
-        for (int i = 1; i <= n; i++) {
-            maxItems = Math.max(maxItems, bfs(i));
-        }
-        System.out.println(maxItems);
+            int start = Integer.parseInt(st.nextToken());
+            int end = Integer.parseInt(st.nextToken());
+            int value = Integer.parseInt(st.nextToken());
 
+            graph.get(start).add(new Position(end, value));
+            graph.get(end).add(new Position(start, value));
+        }
+
+        int ans = 0;
+        for(int i = 1; i <= n; i++) {
+            ans = Math.max(dijkstra(i), ans);
+        }
+        System.out.print(ans);
     }
-    public static int bfs(int start) {
-        PriorityQueue<Node> q = new PriorityQueue<>();
-        int[] dist = new int[n+1];
-        Arrays.fill(dist, Integer.MAX_VALUE);
 
-        q.add(new Node(start, 0));
-        dist[start] = 0;
+    public static int dijkstra(int startNode) {
+        int[] distance = new int[n+1];
+        boolean[] visited = new boolean[n+1];
+
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[startNode] = 0;
+
+        PriorityQueue<Position> pq = new PriorityQueue<>();
+        pq.add(new Position(startNode, 0));
 
         int total = 0;
-        while(!q.isEmpty()) {
-            Node current = q.poll();
-            int curr = current.end;
+        while(!pq.isEmpty()) {
+            Position p = pq.poll();
 
-            if(dist[curr] < current.weight) continue;
-
-            if(dist[curr] <= m) {
-                total += items[curr];
+            if(visited[p.end]) continue;
+            visited[p.end] = true;
+            
+            if(distance[p.end] <= m) {
+                total += items[p.end];
             }
 
-            for(Node next : graph.get(curr)) {
-                if(dist[next.end] > dist[curr] + next.weight) {
-                    dist[next.end] = dist[curr] + next.weight;
-                    q.offer(new Node(next.end, dist[next.end]));
+            for(int i = 0; i < graph.get(p.end).size(); i++) {
+                int next = graph.get(p.end).get(i).end;
+                int nextDistance = graph.get(p.end).get(i).value;
+
+                if(distance[next] > nextDistance + p.value) {
+                    distance[next] = nextDistance + p.value;
+                    pq.add(new Position(next, distance[next]));
                 }
             }
+                
+            
+            
         }
+        //System.out.println();
         return total;
+        
     }
 }
