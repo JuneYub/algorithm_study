@@ -1,55 +1,57 @@
 import java.util.*;
+import java.lang.*;
 import java.io.*;
 
 
-public class Main {
+class Main {
+    static int N, M;
+    static int[] memory;
+    static int[] cost;
+    static int[][] dp; // dp[i][j]의 정의 : i번째 앱까지 고려했을 때, 총 비용이 j일 때 확보할 수 있는 최대 메모리
+    static int totalCost = 0;
+    public static void main(String[] args) throws Exception {
 
-	static int n, m;
-	static int[] weight = new int[101];
-	static int[] value = new int[101];
-	static int[][] dp = new int[101][10001];
-	public static void main(String[] args) throws Exception {
-		
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		
-		n = Integer.parseInt(st.nextToken());
-		m = Integer.parseInt(st.nextToken());
-		
-		st = new StringTokenizer(br.readLine());
-		for(int i = 1; i <= n; i++) {
-			weight[i] = Integer.parseInt(st.nextToken());
-		}
-		
-		st = new StringTokenizer(br.readLine());
-		for(int i = 1; i <= n; i++) {
-			value[i] = Integer.parseInt(st.nextToken());
-		}
-		
-		for(int y = 1; y <= n; y++  ) {
-			
-			for(int x = 0; x <= 10000; x++) {
-				
-				// 넣는 경우 안넣는 경우
-				if(x - value[y] >= 0) {
-					dp[y][x] = Math.max(dp[y-1][x] , dp[y-1][x-value[y]] + weight[y]);
-				}
-				else {
-					dp[y][x] = dp[y-1][x];                                                                                                                                               
-				}
-			}
-		}
-		
-		
-		for(int x = 0; x <= 10000; x++) {
-			for(int y = 1; y <= n; y++) {
-				if(dp[y][x] >= m) {
-					System.out.println(x);
-					return;
-				}
-				
-			}
-		}
-	}
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        memory = new int[N+1];
+        cost = new int[N+1];
+
+        st = new StringTokenizer(br.readLine());
+        for(int i = 1; i <= N; i++) {
+            memory[i] = Integer.parseInt(st.nextToken());
+        }
+
+        st = new StringTokenizer(br.readLine());
+        for(int i = 1; i <= N; i++) {
+            cost[i] = Integer.parseInt(st.nextToken());
+            totalCost += cost[i];
+        }
+
+        dp = new int[N+1][totalCost + 1];
+
+        for(int i = 1; i<= N; i++) {
+            for(int j = 0; j <= totalCost; j++) {
+                // 앱을 끄지 않는 경우
+                dp[i][j] = dp[i-1][j];
+
+                // 앱을 끄는 경우
+                if(j >= cost[i]) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i-1][j - cost[i]] + memory[i]);
+                }
+            }
+        }
+
+        for(int j = 0; j <= totalCost; j++) {
+            if(dp[N][j] >= M) {
+                System.out.println(j);
+                break;
+            }
+        }
+        
+
+    }
 }
