@@ -1,38 +1,35 @@
+import java.util.*;
 class Solution {
-    
-    public static boolean[] visited;
-    public static int[][] computers;
+    public static int answer = 0;
+    public static int[] visited;
     public static int n;
-    public int solution(int max, int[][] orgComputers) {
-        int answer = 0;
-        n = max;
-        // 컴퓨터 배열 초기화
-        computers = new int[n][n];
+    public static int[][] computers;
+    public int solution(int an, int[][] acomputers) {
+
+        n = an;
+        visited = new int[n];
+        computers = acomputers;
+        
+        Arrays.fill(visited, -1);
+        
         for(int y = 0; y < n; y++) {
-            computers[y] = orgComputers[y].clone();
+            if(visited[y] != -1) continue;
+            dfs(y);
+            answer++;
         }
-        
-        // 방문 노드 체크용
-        visited = new boolean[n];
-        for(int i = 0; i < n; i++) {
-            if(!visited[i]) {
-                answer++;
-                dfs(i);
-            }
-        }
-        
         
         return answer;
     }
     
     public static void dfs(int node) {
-        visited[node] = true;
+        
+        visited[node] = answer;
         for(int i = 0; i < n; i++) {
-            if(visited[i]) continue;
-            if(computers[node][i] == 0) continue;
             if(node == i) continue;
-            
+            if(visited[i] != -1) continue;
+            if(computers[node][i] != 1) continue;
             dfs(i);
         }
+        
     }
 }
