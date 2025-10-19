@@ -1,128 +1,138 @@
 import java.util.*;
+import java.lang.*;
 import java.io.*;
 
 class Position {
-    int x,y;
-
-    Position(int x, int y) {
-        this.x = x;
+    int x, y;
+    Position(int y, int x) {
         this.y = y;
+        this.x = x;
     }
 }
 
-public class Main
-{
+class Main {
 
-
-    static int n, m;
-    static int[][] map;
-    static int[][] copyMap;
-    static boolean [][][][][][] visited;
-    static int[] dx = {0, 1, 0, -1};
-    static int[] dy = {-1, 0, 1, 0};
-    static int maxResult = 0;
+    public static int N, M;
+    public static int[][] map;
+    public static int[][] tmpMap;
+    public static List<Position> plist = new ArrayList<>();
+    public static boolean[] visited;
+    public static int[] dx = {0, 1, 0, -1};
+    public static int[] dy = {-1, 0, 1, 0};
+    public static int ans = 0;
+    
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
 
-        map = new int[n][m];
-        copyMap = new int[n][m];
-        visited = new boolean[n][m][n][m][n][m];
-        for(int i = 0; i < n; i++) {
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        map = new int[N][M];
+        tmpMap = new int[N][M];
+
+        for(int y = 0; y < N; y++) {
             st = new StringTokenizer(br.readLine());
-            for(int j = 0; j < m; j++) {
-                map[i][j] = Integer.parseInt(st.nextToken());
+            for(int x = 0; x < M; x++) {
+                map[y][x] = Integer.parseInt(st.nextToken());
+                if(map[y][x] == 0)
+                    plist.add(new Position(y, x));
             }
         }
 
-        makeWall(new ArrayList<Position>(), new Position(0, 0), 0);
-        System.out.println(maxResult);
+        visited = new boolean[plist.size()];
+        // 벽세우기
+        makeWall(0, new ArrayList<>());
+
+        System.out.println(ans);
     }
 
-    public static void makeWall(List<Position> list, Position p, int idx) {
-        if(list.size() != 3) {
+    public static void makeWall(int start, List<Position> tmp) {
+        if(tmp.size() == 3) {
 
-            for(int y = 0; y < n; y++) {
-                search:for(int x = 0; x < m; x++) {
-
-                    if(map[y][x] == 0) {
-                        if(list.isEmpty()) {
-                            list.add(new Position(x, y));
-                            makeWall(list, list.get(list.size() -1 ), idx+1);
-                            list.remove(idx);
-                        }
-                        else {
-                            for(Position comp : list) {
-                                if(comp.x == x && comp.y == y) {
-                                    continue search;
-                                }
-                            }
-                            list.add(new Position(x, y));
-                            makeWall(list, list.get(list.size() -1 ), idx+1);
-                            list.remove(idx);
-                        }
-                    }
-                }
+            // 지도를 복사하자.
+            for(int y = 0; y < N; y++) {
+                tmpMap[y] = Arrays.copyOf(map[y], map[y].length);
             }
-        } else if(list.size() == 3) {
 
-            if(!visited[list.get(0).y][list.get(0).x][list.get(1).y][list.get(1).x][list.get(2).y][list.get(2).x]) {
-                visited[list.get(0).y][list.get(0).x][list.get(1).y][list.get(1).x][list.get(2).y][list.get(2).x] = true;
-                for (int y = 0; y < n; y++) {
-                    copyMap[y] = map[y].clone();
-                }
-                copyMap[list.get(0).y][list.get(0).x] = 1;
-                copyMap[list.get(1).y][list.get(1).x] = 1;
-                copyMap[list.get(2).y][list.get(2).x] = 1;
-
-                int result = countFunction();
-                maxResult = Math.max(result, maxResult);
-
+            for(Position w : tmp) {
+                tmpMap[w.y][w.x] = 1;
             }
+            
+            // 벽을 3개 세웠다. 바이러스를 퍼트리자
+            doVirus();
             return;
         }
+
+        for(int i = start; i < plist.size(); i++) {
+            if(!visited[i]) {
+                tmp.add(plist.get(i));
+                visited[i] = true;
+                makeWall(i+1, tmp);
+                tmp.remove(tmp.size()-1);
+                visited[i] = false;
+            }
+        }
+
+        
     }
 
-    public static int countFunction() {
-        Queue<Position> q = new ArrayDeque<>();
-
-        for(int y = 0; y < n; y++) {
-            for(int x = 0; x < m; x++) {
-                if(copyMap[y][x] == 2) {
-                    q.add(new Position(x, y));
-
-                    while(!q.isEmpty()) {
-                        Position p = q.poll();
-                        for(int i = 0; i < 4; i++) {
-                            int newX = p.x + dx[i];
-                            int newY = p.y + dy[i];
-
-                            if(isRange(newX, newY) && copyMap[newY][newX] == 0) {
-                                copyMap[newY][newX] = 2;
-                                q.add(new Position(newX, newY));
-                            }
-                        }
-
-                    }
+    // 바이러스를 퍼트리고, 안전구역 개수세기
+    public static void doVirus() {
+        for(int y = 0; y < N; y++) {
+            for(int x = 0; x < M; x++) {
+                if(tmpMap[y][x] == 2) {
+                    moveVirus(y, x);
                 }
             }
         }
 
+        // 안전구역 개수세기
         int cnt = 0;
-        for(int y = 0; y < n; y++) {
-            for(int x = 0; x < m; x++) {
-                if(copyMap[y][x] == 0) cnt++;
+        for(int y = 0; y < N; y++) {
+            for(int x = 0; x < M; x++) {
+                if(tmpMap[y][x] == 0) {
+                   cnt++; 
+                }
             }
         }
-        return cnt;
-
+        //printMap();
+        ans = Math.max(ans, cnt);
     }
 
-    public static boolean isRange(int x, int y) {
-        if(y < 0 || y >= n || x < 0 || x >= m) return false;
+    
+    public static void moveVirus(int y, int x) {
+        Queue<Position> q = new ArrayDeque<>();
+        q.add(new Position(y, x));
+        
+        while(!q.isEmpty()) {
+            Position p = q.poll();
+            for(int i = 0; i < 4; i++) {
+                int newY = p.y + dy[i];
+                int newX = p.x + dx[i];
+                if(!isRange(newY, newX)) continue;
+                if(tmpMap[newY][newX] == 1) continue;
+                
+                if(tmpMap[newY][newX] == 0) {
+                    tmpMap[newY][newX] = 2;
+                    q.add(new Position(newY, newX));
+                }
+            }
+        }
+    }
+
+    public static boolean isRange(int y, int x) {
+        if(y < 0 || y >= N || x < 0 || x >= M) return false;
         return true;
     }
 
+    public static void printMap() {
+        for(int y = 0; y < N; y++) {
+            for(int x = 0; x < M; x++) {
+                System.out.print(tmpMap[y][x] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("================================================");
+    }
 }
